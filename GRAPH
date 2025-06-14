@@ -1,0 +1,943 @@
+//1.Shortest Path in Binary Matrix
+class Solution {
+public:
+    int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+       queue<pair<pair<int, int>, int>> q;
+       
+        q.push({{0,0},1});
+         if(grid[0][0]==1)return -1;
+         if(grid[0][0]==0&&grid[0].size()==1&&grid.size()==1)return 1;
+        vector<vector<bool>>visited(grid.size(),vector<bool>(grid.size(),false));
+        visited[0][0]=true;
+
+        while(!q.empty()){
+            pair<int,int>p=q.front().first;
+            int x=p.first;
+            int y=p.second;
+            int lengthofpath=q.front().second;
+            q.pop();
+            vector<pair<int,int>>neighbours={{0,1},{0,-1},{-1,0},{1,0},{1,1},{-1,-1},{1,-1},{-1,1}};
+            for(pair<int,int>neighbour:neighbours){
+               int newx= neighbour.first + x;
+               int newy=neighbour.second + y;
+               if(newx>=0&&newy>=0&&newx<grid.size()&&newy<grid[0].size()&&grid[newx][newy]==0&&!visited[newx][newy]){
+                q.push({{newx,newy},lengthofpath+1});
+                visited[newx][newy]=true;
+             if (newx == grid.size() - 1 && newy == grid.size() - 1) return lengthofpath + 1;
+
+               }
+            }
+
+        }
+        return -1;
+
+
+        
+        
+    }
+};
+//2.Keys and Rooms
+class Solution {
+
+public:
+    bool canVisitAllRooms(vector<vector<int>>& rooms) {
+        std:: set<int> v{};
+        std:: stack<int> mystk{};
+        v.insert(0);
+        for(const auto& elem : rooms[0]){
+            mystk.push(elem);
+        }
+        while (!mystk.empty()){
+            int CR=mystk.top();
+            mystk.pop();
+            if(v.find(CR)==v.end()){
+                v.insert(CR);
+                for( const auto& elem:rooms[CR]){
+                    mystk.push(elem);
+                }
+            }
+        }
+        return (v.size()==rooms.size());
+
+        
+    
+
+
+
+        
+    }
+};
+//3.Open the Lock
+class Solution {
+public:
+    int openLock(vector<string>& deadends, string target) {
+        unordered_set <string> dead(deadends.begin(),deadends.end());
+        if(dead.count("0000"))return -1;
+        queue<pair<string,int>>q;
+        q.push({"0000",0});
+        unordered_set<string>visited;
+        visited.insert("0000");
+        while(!q.empty()){
+            auto [current,movies]=q.front();
+            q.pop();
+            if(current==target)return movies;
+            for(int i=0;i<4;i++){
+                for(int j:{-1,1}){
+                    string next=current;
+                    next[i]=(next[i]-'0'+j+10)%10+'0';
+                    if(!dead.count(next)&&!visited.count(next)){
+                        visited.insert(next);
+                        q.push({next,movies+1});
+
+
+                    }
+                }
+            }
+
+        }
+return -1;
+        
+    }
+};
+// 4.01 Matrix
+class Solution {
+public:
+    vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
+     int m=mat.size();
+     int n=mat[0].size();
+     vector<vector<int>> ans(m,vector<int>(n));  
+     vector<vector<int>> visited(m,vector<int>(n,0)); 
+     queue<pair<pair<int,int>,int>> q ;
+     for(int i= 0 ; i<m; i++){
+        for(int j=0 ; j<n ; j++){
+            if(mat[i][j]==0){
+                ans[i][j]=0;
+                q.push({{i,j},0});
+                visited [i][j]=1;
+            }
+        }
+     }
+     int r[]={-1,0,1,0};
+     int c[]={0,1,0,-1};
+     while(!q.empty()){
+        int raw=q.front().first.first;
+        int col=q.front().first.second;
+        int step=q.front().second;
+        q.pop();
+        for(int i=0;i<4;i++){
+            int cr= raw + r[i];
+            int cc =col + c[i];
+            if(cr>=0 &&cr<m && cc>=0 && cc<n &&visited[cr][cc]!=1){
+                ans[cr][cc]= step + 1 ;
+                q.push({{cr,cc},step + 1});
+                visited [cr][cc]=1;
+            }
+        }
+     }
+      return ans ;
+     
+
+    }
+};
+// 5.Map of Highest Peak
+class Solution {
+
+public:
+    vector<vector<int>> highestPeak(vector<vector<int>>& isWater) {
+        int n = isWater.size();
+        int m= isWater[0].size();
+        vector<vector<int>> ans(n, vector<int>(m, -1));
+        queue<pair<int, int>> q;
+        int x[4] = {0, 0, 1, -1};
+        int y[4] = {1, -1, 0, 0};
+        for(int i=0; i<n; i++){
+            for(int j =0 ; j<m; j++){
+                if(isWater[i][j]==1){
+                    ans[i][j]=0;
+                    q.push({i,j});
+                }
+            }
+        }
+        while(!q.empty()){
+            auto top = q.front();
+            q.pop();
+            for(int i=0; i<4; i++){
+                int newI = top.first + y[i];
+                int newJ = top.second + x[i];
+                if (newI >=0 && newI< n && newJ >=0 && newJ < m && ans[newI][newJ] == -1){
+                    ans[newI][newJ]= ans[top.first][top.second]+1;
+                    q.push({newI, newJ});
+                }
+            }
+        }
+        return ans;        
+    
+
+        
+    }
+};
+//6.As Far from Land as Possible
+class Solution {
+private:
+    int n, m;
+    int dirs[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
+public:
+    int maxDistance(vector<vector<int>>& grid) {
+
+        n = grid.size(), m = grid[0].size();
+        vector<vector<int>> dis(n, vector<int>(m, -1));
+        queue<int> q;
+        for(int i = 0; i < n; i ++)
+            for(int j = 0; j < m; j ++)
+                if(grid[i][j])
+                    q.push(i * m + j), dis[i][j] = 0;
+
+        int res = 0;
+        while(!q.empty()){
+            int curx = q.front() / m, cury = q.front() % m;
+            q.pop();
+            res = max(res, dis[curx][cury]);
+
+            for(int d = 0; d < 4; d ++){
+                int nextx = curx + dirs[d][0], nexty = cury + dirs[d][1];
+                if(in_area(nextx, nexty) && dis[nextx][nexty] == -1){
+                    q.push(nextx * m + nexty);
+                    dis[nextx][nexty] = dis[curx][cury] + 1;
+                }
+            }
+        }
+        return res ? res : -1;
+    }
+
+private:
+    bool in_area(int x, int y){
+        return x >= 0 && x < n && y >= 0 && y < m;
+    }
+};
+//7.All Nodes Distance K in Binary Tree
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+ unordered_map<TreeNode*,TreeNode*>mp;
+ unordered_set<TreeNode*>vis;
+ void connectwithparents(TreeNode* root,TreeNode* parent)
+ {
+    if(root==NULL)return;
+    mp[root]=parent;
+    connectwithparents(root->left,root);
+    connectwithparents(root->right,root);
+ }
+ void dfs(TreeNode *target,int k,vector<int>&res)
+ {
+          if(target==NULL)return;
+          if(vis.count(target)==true)return;
+          vis.insert(target);
+          if (k==0){
+            res.push_back(target->val);
+            return ;
+          }
+          dfs(target ->left ,k-1,res);
+          dfs(target ->right ,k-1,res);
+          dfs(mp[target] ,k-1,res);
+ }
+
+vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+    vector<int>res;
+    if (root==NULL)return res ;
+    connectwithparents(root,NULL);
+    dfs(target,k,res);
+    return res;
+        
+    }
+};
+ //8.Nearest Exit from Entrance in Maze
+class Solution {
+public:
+    int dir[4][2] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}}; // Directions (Left, Up, Right, Down)
+
+    int nearestExit(vector<vector<char>>& maze, vector<int>& entrance) {
+        int m = maze.size(), n = maze[0].size();
+        int moves = 0;
+        queue<pair<int, int>> q;
+
+        q.push({entrance[0], entrance[1]});
+        maze[entrance[0]][entrance[1]] = '+';  // Mark entrance as visited
+
+        while (!q.empty()) {
+            int sz = q.size();
+            while (sz--) {
+                auto curr = q.front();
+                q.pop();
+
+                for (auto it : dir) {
+                    int x = curr.first + it[0], y = curr.second + it[1];
+
+                    // Check if (x, y) is within bounds and is not a wall
+                    if (x >= 0 && x < m && y >= 0 && y < n && maze[x][y] == '.') {
+                        // Check if it's a valid exit (but not the entrance)
+                        if ((x == 0 || x == m - 1 || y == 0 || y == n - 1) &&
+                            !(x == entrance[0] && y == entrance[1])) {
+                            return moves + 1;
+                        }
+
+                        // Mark cell as visited and push to queue
+                        maze[x][y] = '+';
+                        q.push({x, y});
+                    }
+                }
+            }
+            moves++; // Increment after processing current BFS level
+        }
+
+        return -1;  // No exit found
+    }
+};
+//9.Snakes and Ladders
+
+class Solution {
+    private:
+      bool isOdd(int n){ 
+         return n%2 !=0 ;
+      }
+    
+      pair<int,int> convert2RC(int n ,int val){
+        int row = n-1-((val - 1)/n );
+        int col =( val -1 ) % n;
+       if (isOdd(n - 1 - row)) 
+        col = n - 1 - col;
+          return{row,col};
+      }
+      int convert2Val(int n ,int row, int col){
+        int location =n*(n - 1 - row);
+   if ((isOdd(n) && isOdd(row)) || (!isOdd(n) && !isOdd(row))) {
+    col = n - 1 - col;
+}
+        location += col +1;
+        return location ;
+      }
+public:
+    int snakesAndLadders(vector<vector<int>>& board) {
+        int n=board.size();
+        int finalVal= n* n;
+
+vector<int>visited (finalVal + 1,0);
+        queue<pair<int,int>> q ;
+        q.push({0,1});
+        visited[1]=1 ;
+        while(!q.empty()){
+            int depth= q.front().first ;
+            int val =q.front().second ;
+            q.pop();
+            if (val == finalVal) return depth ;
+
+            for (int i=1; i<=6;  i++){
+                int nextVal =val+ i;
+                if(nextVal>finalVal) break ;
+
+                auto location =convert2RC(n ,nextVal);
+                int row =location.first;
+                int col=location.second ;
+
+                if(board[row][col] != -1){
+                    nextVal = board[row][col];
+                }
+
+                if(visited[nextVal]==0){
+                    visited[nextVal] =1;
+                    q.push({depth +1 ,nextVal});
+                }
+
+            }
+        }
+
+        return -1 ;
+        
+    }
+};
+//10.Rotting Oranges
+class Solution {
+public:
+    int orangesRotting(vector<vector<int>>& grid) {
+        int m=grid.size();
+        int n=grid[0].size();
+        int time = 0;
+        queue<pair<int,int>> rotten ;
+
+        for(int i =0 ; i < m ; i++){
+            for(int j=0 ; j < n; j++){
+                if (grid[i][j]==2)
+                  rotten.push({i,j});
+            }
+        }
+        vector<pair<int,int>> directions ={{-1,0},{1,0},{0,-1},{0,1}};
+        while(!rotten.empty()){
+            int rottenSize =rotten.size();
+
+            for(int i = 0 ; i < rottenSize; i++){
+                int x= rotten.front().first;
+                int y=rotten.front().second;
+                rotten.pop();
+
+                for(const auto& dir : directions){
+                    int newX = x + dir.first;
+                    int newY = y + dir.second;
+                    if(newX >=0 && newX < m && newY >=0 && newY < n && grid[newX][newY]==1){
+                         grid[newX][newY]=2;
+                         rotten.push({newX,newY});
+                        
+                    }
+                }
+            }
+            if(!rotten.empty())
+                 time ++;
+
+        }
+        for(int i=0 ; i<m ; i++){
+            for(int j=0 ;j <n; j++){
+                if (grid[i][j]==1)
+                  return -1;
+            }
+        }
+        return time ;
+    }
+};
+//11.Race Car
+class Solution {
+public:
+    int racecar(int target) {
+        static vector<int> dp(10001, -1);
+        if(dp[target] >= 0) return dp[target];
+        int n=floor(log2(target)) + 1;
+        if((1<<n)-1 == target)
+            dp[target] = n;
+        else {
+            dp[target]=n+ 1+racecar((1<<n)-1-target);
+            for(int i=0 ; i< n-1 ;++i){
+                dp[target]=min(dp[target],n + i + 1 + racecar(target-(1<<(n-1)) + (1<<i)));
+            }
+        }
+        return dp[target];
+    }
+};
+//12.Bus Routes
+
+class Solution {
+public:
+    int numBusesToDestination(vector<vector<int>>& routes, int source, int target) {
+        unordered_map<int,unordered_set<int>> stop_routes;
+        for(int i=0 ;i <routes.size(); ++i)
+          for (int j : routes[i]) stop_routes[j].insert (i);
+
+        queue<pair<int,int>> to_visit ;
+        to_visit.push({source ,0});
+        unordered_set<int> stops_visited={ source };
+
+        while(!to_visit.empty())
+        {
+            int stop =to_visit.front().first;
+            int bus_n =to_visit.front().second;
+
+            if(stop==target) return bus_n;
+            to_visit.pop();
+
+
+for(const auto& route : stop_routes[stop]){
+                for (const auto& next_stop :routes[route]){
+                    auto it=stops_visited.insert(next_stop);
+                    if (it.second) to_visit.push({next_stop,bus_n + 1});
+                }
+                routes[route].clear();
+            }
+        }
+        return -1 ;
+    }
+};
+//13.Word Ladder
+class Solution {
+   public:
+   string putStar(int j, string s){
+      string temp = "";
+      for(int i = 0; i < s.size(); i++){
+         if(i == j)temp += "*";
+         else temp += s[i];
+      }
+      return temp;
+   }
+   int ladderLength(string b, string e, vector<string>& w) {
+ if (find(w.begin(), w.end(), e) == w.end() || !b.size() || !e.size() || !w.size()) 
+    return 0;
+      map < string , vector <string> > m;
+      for(int i = 0; i < w.size(); i++){
+         string x = w[i];
+         for(int j = 0; j < x.size(); j++){
+            string inter = putStar(j,x);
+            m[inter].push_back(x);
+         }
+      }
+      queue < pair <string, int> > q;
+      q.push({b, 1});
+      map <string, int> visited;
+      while(!q.empty()){
+         pair < string, int > s = q.front();
+         q.pop();
+         string x = s.first;
+         int l = s.second;
+         for(int i = 0; i < x.size(); i++){
+            string temp = putStar(i ,x);
+            for(int j = 0; j < m[temp].size(); j++){
+               string aa = m[temp][j];
+               if(aa == e)return l+1;
+               if(!visited[aa]){
+                  q.push({aa, l+1});
+                  visited[aa] = 1;
+               }
+            }
+         }
+      }
+      int level = 0;
+      return 0;
+   }
+};
+/*
+// Definition for Employee.
+class Employee {
+public:
+    int id;
+    int importance;
+    vector<int> subordinates;
+};
+//14.Employee Importance 
+
+class Solution {
+public:
+    int ImportanceSum = 0;
+        void AddSum(vector<Employee*> employees, int id){
+            for (int i = 0; i<employees.size(); i++){
+                if(employees[i]->id==id){
+                    ImportanceSum+=employees[i]->importance;
+                    if(employees[i]->subordinates.size()==0)
+                        return;
+                    for(int j=0; j<employees[i]->subordinates.size(); j++)
+                        AddSum(employees, employees[i]->subordinates[j]);
+                }
+            }
+        }
+    int getImportance(vector<Employee*> employees, int id) {
+        AddSum(employees,id);
+        return ImportanceSum;    
+    }
+};
+//15.Number of Provinces
+class Solution {
+public:
+    void dfs(vector<vector<int>>& isConnected, int i,  int j){
+        isConnected[i][j] = 0;
+
+        for(auto k=0; k<isConnected.size(); k++){
+            if(isConnected[j][k]==1)
+                dfs(isConnected, j, k);
+        }
+    }
+    int findCircleNum(vector<vector<int>>& isConnected) {
+        int maxProvinces=0;
+        for(auto i=0; i<isConnected.size(); i++){
+            for(auto j=0; j<isConnected[0].size(); j++){
+                if(isConnected[i][j]==1){
+                    maxProvinces++;
+                    dfs(isConnected, i, j);
+                }
+            }
+        }
+        return maxProvinces;
+        
+    }
+};
+//Lowest Common Ancestor of deepest leaves
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (!root || root == p || root == q) return root;
+        
+        TreeNode* left = lowestCommonAncestor(root->left, p, q);
+        TreeNode* right = lowestCommonAncestor(root->right, p, q);
+        
+        if (left && right) return root; // If both left and right are non-null, root is LCA
+        return left ? left : right; // Otherwise, return whichever subtree contains p or q
+    }
+};
+//16.Sum of Nodes with Even-Valued grandparent
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int sumEvenGrandparent(TreeNode* root) {
+        if(!root) return 0;
+        int a=0, b=0, c=0, d=0;
+        if(root->val%2==0){
+            if(root->left){
+                if(root->left->left){
+                    a = root->left->left->val;
+                }
+                if(root->left->right){
+                    b= root->left->right->val;
+                }
+            }  
+            if(root->right){
+                if(root->right->left){
+                    c = root->right->left->val;
+                }
+                if(root->right->right){
+                    d= root->right->right->val;
+                }
+            }
+        }
+      
+         return a + b + c + d + sumEvenGrandparent(root->left) + sumEvenGrandparent(root->right);
+    }
+    };  
+//17.Max Area Of Island
+class Solution {
+    int dfs(vector<vector<int>>& grid, int i, int j){
+        int r = grid.size();
+        int c = grid[0].size();
+        if(i < 0 || j<0 || i>= r || j >= c || grid[i][j] !=1){
+            return 0;
+        }
+        grid[i][j] = 2;
+        return (1 + dfs(grid, i+1, j) + dfs(grid, i-1, j) + dfs(grid, i, j+1)+ dfs(grid, i, j-1));
+    }
+public:
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int r = grid.size();
+        int c = grid[0].size();
+        int result = 0;
+        for(int i=0; i<r; ++i){
+            for(int j=0; j < c; ++j){
+                if(grid[i][j]==1) result = max(result, dfs(grid, i, j));
+            }
+        }
+        return result;      
+    }
+};
+//18.Evaluation Division
+class Solution {
+public:
+    unordered_map<string, vector<pair<string, double>>> graph;
+    double DFS(string src, string dst, unordered_set<string> &visited){
+        if(graph.find(src) == graph.end())
+            return -1.0;
+        if(src == dst)
+            return 1;
+        visited.insert(src);
+        for(auto node:graph[src]){
+            if(visited.find(node.first) != visited.end())
+                continue;
+            double res = DFS(node.first, dst, visited);
+            if(res != -1){
+                return res*node.second;
+            }
+        }
+        return -1;
+    }
+    vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+        int n = equations.size();
+        for(int i = 0; i<n; i++){
+            string a = equations[i][0];
+            string b = equations[i][1];
+            double val = values[i];
+
+            graph[a].push_back({b, val});
+            graph[b].push_back({a, (1/val)});
+        }
+        vector<double> result;
+        for(auto query: queries){
+            unordered_set<string> visited;
+            result.push_back(DFS(query[0], query[1], visited));
+        }
+        return result;
+        
+    }
+};
+//19.Sum Root To leaf Numbers 
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void preOrder(TreeNode * root, int& myreturn, int currentNumber){
+        if(root==NULL)
+            return;
+        currentNumber= currentNumber*10+root->val;
+        if(root->left==NULL and root->right==NULL){
+            myreturn += currentNumber;
+            return;
+        }
+        preOrder(root->left, myreturn, currentNumber);
+        preOrder(root->right, myreturn, currentNumber);
+
+    }
+    int sumNumbers(TreeNode* root) {
+        if(root==NULL)
+            return 0;
+        int myreturn{0};
+        preOrder(root, myreturn,0);
+
+        return myreturn;      
+    }
+};
+//20.Denote the Maximum Bombs
+
+ class Solution {
+public:
+    int detonate(vector<vector<int>>&bombs, vector<bool>&detonated, int i){
+        int ans = 0, n = bombs.size();
+        for(int j=0; j<n; j++){
+            if(!detonated[j]) {
+                int x1 = bombs[i][0], y1 = bombs[i][1], r1 = bombs[i][2];
+                int x2 = bombs[j][0], y2 = bombs[j][1], r2 = bombs[j][2];
+                long dist = pow(x1-x2, 2) + pow(y1-y2, 2);
+                
+                if(dist <= (long) r1*r1){
+                    detonated[j]= true;
+                    ans += 1 + detonate(bombs, detonated, j);
+                }
+            }
+        }
+        return ans;
+    }
+    int maximumDetonation(vector<vector<int>>& bombs) {
+        int maxdetonated = 0, n=bombs.size();
+        for(int i=0; i<n; i++){
+            vector<bool>detonated(n, false);
+            detonated[i] = true;
+            int curr= 1 + detonate(bombs, detonated, i);
+            maxdetonated = max(maxdetonated, curr);
+        }
+        return maxdetonated;
+    }
+};
+//21.Surrounded Regions 
+class Solution {
+public:
+    void dfs(vector<vector<char>>& grid, int r, int c){
+        int R =grid.size();
+        int C = grid[0].size();
+        if(grid[r][c]!='O') return;
+
+        grid[r][c]='Z';
+        int dr[4]={1,-1,0,0};       
+        int dc[4]={0,0,1,-1};
+        for(int i=0; i<4; i++){
+            int rr=r+dr[i];
+            int cc=c+dc[i];
+            if(rr>=0&& rr<R && cc>=0 && cc<C){
+                dfs(grid,rr,cc);
+
+            }
+        }
+    }
+    void solve(vector<vector<char>>& grid) {
+        int R= grid.size();
+        int C = grid[0].size();
+        for(int i=0; i<R; i++){
+            for(int j=0; j<C; j++){
+                if(i==0 || j==0 || i==R-1 || j==C-1){
+                    dfs(grid,i,j);
+                }
+            }
+        }
+        for(int i=0; i<R; i++){
+            for(int j=0; j<C; j++){
+                if(grid[i][j]=='Z'){
+                    grid[i][j]='O';
+                }
+                else if(grid[i][j]=='O'){
+                    grid[i][j]='X';
+                }
+            }
+        }
+        
+    }
+};
+//22.Minesweeper
+class Solution {
+public:
+    vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {
+        int row = click[0];
+        int col = click[1];
+
+        // If clicked on a mine, mark as 'X' (game over)
+        if (board[row][col] == 'M') {
+            board[row][col] = 'X';
+            return board;
+        }
+
+        // Start DFS exploration
+        dfs(board, row, col);
+        return board;
+    }
+
+private:
+    void dfs(vector<vector<char>>& board, int row, int col) {
+        // Base case: out of bounds or not an 'E' cell
+        if (row < 0 || row >= board.size() || col < 0 || col >= board[0].size() || board[row][col] != 'E') {
+            return;
+        }
+
+        // Count adjacent mines
+        int mines = countAdjacentMines(board, row, col);
+        if (mines > 0) {
+            board[row][col] = mines + '0';  // Convert mine count to char
+        } else {
+            board[row][col] = 'B';
+
+            // Explore 8 neighboring cells
+            for (int i = -1; i <= 1; ++i) {
+                for (int j = -1; j <= 1; ++j) {
+                    if (i == 0 && j == 0) continue;  // Skip self
+                    dfs(board, row + i, col + j);
+                }
+            }
+        }
+    }
+
+    int countAdjacentMines(const vector<vector<char>>& board, int row, int col) {
+        int count = 0;
+        for (int i = -1; i <= 1; ++i) {
+            for (int j = -1; j <= 1; ++j) {
+                if (i == 0 && j == 0) continue;
+
+                int newRow = row + i;
+                int newCol = col + j;
+
+                // Check if (newRow, newCol) is valid and contains a mine
+                if (newRow >= 0 && newRow < board.size() &&
+                    newCol >= 0 && newCol < board[0].size() &&
+                    board[newRow][newCol] == 'M') {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+};
+//23.Lowest Common Ancestor Of Deepest Leaves
+class Solution {
+private:
+    pair<TreeNode*, int> lca_rec(TreeNode* root) {
+        if (root == nullptr) return {nullptr, 0};
+
+        auto left = lca_rec(root->left);
+        auto right = lca_rec(root->right);
+
+        if (left.second > right.second) return {left.first, left.second + 1};
+        if (right.second > left.second) return {right.first, right.second + 1};
+
+        // If depths are equal, root is the LCA
+        return {root, left.second + 1};
+    }
+
+public:
+    TreeNode* lcaDeepestLeaves(TreeNode* root) {
+        return lca_rec(root).first;
+    }
+};
+//24.Recover Binary Search Tree
+class Solution {
+public:
+    void markTree(TreeNode* root,TreeNode*& prev,TreeNode*& first,TreeNode*& end) {
+        if(!root) return ;
+        markTree(root ->left,prev,first,end);
+        if(prev){
+            if(prev ->val >root ->val){
+                if(!first){
+                    first=prev;
+                }
+                end=root;
+            }
+        }
+        prev=root;
+        markTree(root->right,prev,first,end);
+    }
+    public:
+    void recoverTree(TreeNode*root){
+        TreeNode *prev=nullptr,*first =nullptr,*end =nullptr;
+        markTree(root,prev,first,end);
+        swap(first -> val, end ->val);
+        return;
+    }
+};
+//25.Check if There is Valid Path in a Grid
+class Solution {
+public:
+    bool hasValidPath(vector<vector<int>>& grid) {
+        int m= grid.size();
+        int n =grid[0].size();
+        vector<vector<bool>> visited ( m, vector <bool>(n , false));
+        return dfs (grid,0,0 ,visited );
+        
+    }
+    private :
+    bool dfs(vector<vector<int>>& grid, int row ,int col ,vector<vector<bool>>& visited){
+        int m = grid .size ();
+        int n =grid[0].size();
+         if (row == m-1 && col == n-1) return true ;
+
+         visited[row][col]=true ;
+         int street =grid[row][col];
+         vector<pair<int,int>> directions ;
+
+
+if(street==1) directions ={{0,1},{0,-1}};
+            else if(street==2) directions ={{-1,0},{1,0}};
+            else if(street==3) directions ={{0,-1},{1,0}};
+            else if(street==4) directions ={{0,1},{1,0}};
+            else if(street==5) directions ={{0,-1},{-1,0}};
+            else if(street==6) directions ={{0,1},{-1,0}};
+            for (auto& d: directions){
+                int nr= row + d.first ;
+                int nc =col + d.second ;
+       if (nr < 0 || nr >= m || nc < 0 || nc >= n) 
+    continue;
+                if(visited[nr][nc]) continue ;
+
+                 int nextStreet = grid[nr][nc];
+
+if ((d == make_pair(0, -1) && (nextStreet == 1 || nextStreet == 4 || nextStreet == 6)) ||
+    (d == make_pair(0, 1) && (nextStreet == 1 || nextStreet == 3 || nextStreet == 5)) ||
+    (d == make_pair(-1, 0) && (nextStreet == 2 || nextStreet == 3 || nextStreet == 4)) ||
+    (d == make_pair(1, 0) && (nextStreet == 2 || nextStreet == 5 || nextStreet == 6))) {
+    
+    if (dfs(grid, nr, nc, visited)) return true;
+}
+             }
+             return false ;
+}
+
+};
