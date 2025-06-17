@@ -1,0 +1,30 @@
+File Tracking & Commit Storage
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <ctime>
+
+std::string generateHash(const std::string& data) {
+    std::hash<std::string> hasher;
+    return std::to_string(hasher(data));  // Simple hash
+}
+
+void createCommit(const std::string& message) {
+    time_t now = time(0);
+    std::string timestamp = ctime(&now);
+    std::string hash = generateHash(message + timestamp);
+
+    std::ofstream file(".minigit/commits/" + hash + ".txt");
+    file << "Commit: " << hash << "\nMessage: " << message << "\nTimestamp: " << timestamp << "\n";
+    file.close();
+
+    std::cout << "Commit saved with hash: " << hash << std::endl;
+}
+
+int main() {
+    std::string msg;
+    std::cout << "Enter commit message: ";
+    std::getline(std::cin, msg);
+    createCommit(msg);
+    return 0;
+}
