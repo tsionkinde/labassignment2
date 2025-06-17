@@ -1,0 +1,45 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+void rollbackToCommit(const std::string& commitHash) {
+    std::string commitPath = ".minigit/commits/" + commitHash + ".txt";
+    
+    if (!fs::exists(commitPath)) {
+        std::cout << "Error: Commit does not exist!\n";
+        return;
+    }
+
+    std::ifstream file(commitPath);
+    std::string line;
+    std::cout << "Rolling back to commit: " << commitHash << "\n";
+
+    while (std::getline(file, line)) {
+        std::cout << line << std::endl;  // Display commit details
+    }
+    file.close();
+
+    // Update index.txt to reflect rollback
+    std::ofstream indexFile(".minigit/index.txt");
+    indexFile << "Current Commit: " << commitHash << "\n";
+    indexFile.close();
+
+    std::cout << "Rollback successful!\n";
+}
+
+int main() {
+    std::string commitHash;
+    std::cout << "Enter commit hash to rollback: ";
+    std::getline(std::cin, commitHash);
+    rollbackToCommit(commitHash);
+    return 0;
+}
+//Possible Improvements
+//Restore actual files from commit snapshots.
+
+//Implement rollback history for tracking reversions.
+
+//Add error handling to prevent overwriting important data
