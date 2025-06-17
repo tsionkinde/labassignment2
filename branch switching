@@ -1,0 +1,29 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+void switchBranch(const std::string& branchName) {
+    std::string branchPath = ".minigit/branches/" + branchName + ".txt";
+    
+    std::ifstream branchFile(branchPath);
+    if (!branchFile) {
+        std::cout << "Error: Branch '" << branchName << "' does not exist!\n";
+        return;
+    }
+    branchFile.close();
+
+    // Update index.txt to reflect active branch
+    std::ofstream indexFile(".minigit/index.txt");
+    indexFile << "Current Branch: " << branchName << "\n";
+    indexFile.close();
+
+    std::cout << "Switched to branch: " << branchName << "\n";
+}
+
+int main() {
+    std::string branchName;
+    std::cout << "Enter branch name to switch to: ";
+    std::getline(std::cin, branchName);
+    switchBranch(branchName);
+    return 0;
+}
