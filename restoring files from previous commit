@@ -1,0 +1,19 @@
+#include <iostream>
+#include <fstream>
+#include <cstdio>
+
+void restoreFileFromCommit(const std::string& commitHash, const std::string& fileName) {
+    std::string backupPath = ".minigit/commits/" + commitHash + "_" + fileName;
+    std::string restorePath = "./" + fileName;
+
+    std::ifstream src(backupPath, std::ios::binary);
+    std::ofstream dest(restorePath, std::ios::binary);
+    
+    if (!src) {
+        std::cout << "Error: No backup found for " << fileName << " in commit " << commitHash << std::endl;
+        return;
+    }
+
+    dest << src.rdbuf();  // Restore file content
+    std::cout << "File restored: " << fileName << " from commit " << commitHash << std::endl;
+}
